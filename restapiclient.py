@@ -30,7 +30,10 @@ import urllib.request
 import requests
 import time
 import json
-from requests_hawk import HawkAuth
+# Azure webapp linux started breaking, couldn't pip install this, taking out for now
+# =============================================================================
+# from requests_hawk import HawkAuth
+# =============================================================================
 import pytz
 import hashlib
 import binascii
@@ -105,9 +108,9 @@ class ApiClient():
         self._auth_secret = kwargs.get('auth_secret') # for sas, the SAS key. for hawk or signature, the private/secret key.
         self._auth_name = kwargs.get('auth_name') # for sas, the SAS policy name. for hawk or signature, the key ID
         #######################################################################
-        self.api_endpoints = self._config['api_endpoints']
-        self.api_functions = self._config['api_functions']
-        self.base_url = self._config['api_base_url']
+        self.api_endpoints = self._config['api_endpoints'] # have to have this
+        self.api_functions = self._config.get('api_functions', {}) #this is optional
+        self.base_url = self._config['api_base_url'] # have to have this
         self.base_queryparams = self._config.get('api_base_queryparams', {})
         self.base_headers = self._config.get('api_base_headers', {})
 #        self.api_request_format = self._config.get('api_request_format') # handled by requests based on json vs. data kwargs
@@ -130,8 +133,10 @@ class ApiClient():
         elif self.auth_method == 'sas':
             self._sas_token_ttl = self._config['api_auth_info'][self.auth_method].get('request_token_ttl_seconds', 30)
             self._auth_sig_format_string = 'SharedAccessSignature sr={}&sig={}&se={}'
-        elif self.auth_method == 'hawk':
-            self.auth_bypass = True
+# =============================================================================
+#         elif self.auth_method == 'hawk':
+#             self.auth_bypass = True
+# =============================================================================
         elif self.auth_method == 'http_signature':
             self._auth_sig_format_string = 'Signature keyId="{}",algorithm="hmac-{}",headers="{}",signature="{}"'
             self._hash_algorithm = self._config['api_auth_info'][self.auth_method].get('hash_algorithm', 'sha256')
@@ -157,7 +162,10 @@ class ApiClient():
             raise NotImplementedError
     def auth_bypass_func(self, *args, **kwargs):
         if self.auth_method == 'hawk':
-            return HawkAuth(id=self._auth_name, key=self._auth_secret)
+# =============================================================================
+#             return HawkAuth(id=self._auth_name, key=self._auth_secret)
+# =============================================================================
+            return None
     def _auth_username(self):
         pass_authcreds_via = self._config['api_auth_info'][self.auth_method].get('authcreds_passed_in', 'data')
         user_field_name = self._config['api_auth_info'][self.auth_method]['authcreds_username_key']
@@ -359,7 +367,7 @@ class ApiClient():
             lumberjack.debug('request headers from respobj: %s', respobj.request.headers)
             lumberjack.debug('request body from respobj: %s', respobj.request.body)
             lumberjack.debug('reponse object: %s', dir(respobj))
-            lumberjack.debug('response status code: %s', respobj.headers)
+            lumberjack.debug('response status code: %s', respobj.status_code)
     #        lumberjack.debug('responseobj request body: %s', respobj.request.body)            
     #        lumberjack.debug('response content as bytes: %s', respobj.content) #this is way too much for debug logs
     #        lumberjack.debug('response content as text: %s', respobj.text) #this is way too much for debug logs
