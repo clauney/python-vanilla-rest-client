@@ -1,3 +1,22 @@
+# =============================================================================
+# # USAGE
+# auth_method_none_rest_client = ApiClient(your_config_dict)
+# auth_method_token_rest_client = ApiClient(your_config_dict,
+#                                           token=your_token)
+# auth_method_user_and_pass_client = ApiClient(your_config_dict,
+#                                            username=your_username,
+#                                            password=your_pass) #!!!! will become auth_name, auth_auth_secret
+# auth_method_oauth2_client = ApiClient(your_config_dict,
+#                                       username=your_username,
+#                                       password=your_pass) #!!!! will become auth_name, auth_auth_secret
+# auth_method_http_signature_client = ApiClient(your_config_dict,
+#                                               auth_name=key_id_or_name,
+#                                               auth_secret=secret_key)
+# auth_method_sas_client = ApiClient(your_config_dict,
+#                                    auth_name=policyname_or_keyname,
+#                                    auth_secret=secret_key)
+# =============================================================================
+
 # GENERAL LAYOUT
 basic_api_config = {
         'api_auth_info': {  # Authentication config info. SEE SECTIONS BELOW for examples
